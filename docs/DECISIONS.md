@@ -10,7 +10,7 @@ Choices made while building Bema, with the reason, so they are not re-argued or 
 - **Windows speech is SAPI (`System.Speech`), on the PC only.** Windows' newer recognizer (`Windows.Media.SpeechRecognition`) uses Microsoft's online service for dictation, against Bema's rule that speech stays on the device when it can. SAPI recognizes only the speech languages installed in Windows (often just the display language); for any other Bema says it can't listen, rather than going online.
 - **.NET 10, not .NET 8.** .NET 8 leaves support in November 2026; 10 is the long-term release.
 - **One self-contained `Bema.exe`.** Nothing to install first, no .NET runtime to ask people for. Bigger download, simpler start.
-- **Two NuGet packages: QRCoder and System.Speech** (plus ProtectedData for keys). QR codes have no built-in Windows API, and QRCoder draws them locally with no network. None of them contacts anything.
+- **Two NuGet packages: QRCoder and System.Speech.** QR codes have no built-in Windows API, and QRCoder draws them locally with no network. None of them contacts anything.
 - **Settings in a JSON file in `%APPDATA%\Bema`, API keys encrypted with DPAPI for the Windows user.** The Mac's UserDefaults and Keychain have no exact Windows twin; DPAPI ties the keys to the user's sign-in like the Keychain does.
 - **Pipes are owner-only.** The single-instance pipe and the MCP pipe get an access rule for the current user only, and their names include the user's SID, so another account on the same PC can't reach them (the Mac's socket is chmod 600).
 - **No update check on Windows yet.** Sparkle is Mac-only and the allowed update check is the Mac app's; a Windows feed would be a new outgoing connection, so it waits for the maintainer to choose one.

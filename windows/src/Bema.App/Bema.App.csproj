@@ -32,8 +32,7 @@
     <PackageReference Include="System.Speech" Version="9.0.0" />
     <!-- QR codes for the phone remote and polls, drawn locally (MIT, no network). -->
     <PackageReference Include="QRCoder" Version="1.6.0" />
-    <!-- API keys encrypted for this Windows user (DPAPI). -->
-    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.0" />
+    <!-- DPAPI (System.Security.Cryptography.ProtectedData) is part of .NET 10 on Windows: no package. -->
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\Bema.ico" />
