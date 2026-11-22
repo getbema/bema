@@ -7,6 +7,8 @@
     <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
+    <!-- LibraryImport (the Windows API calls in Platform/Native.cs) generates unsafe marshalling code. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RootNamespace>Bema.App</RootNamespace>
     <AssemblyName>Bema</AssemblyName>
     <ApplicationIcon>Assets\Bema.ico</ApplicationIcon>
