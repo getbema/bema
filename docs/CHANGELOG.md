@@ -4,6 +4,12 @@ What was built, newest first. The reasons behind choices are in [DECISIONS.md](D
 
 Each entry says what changed and, where it applies, what was **not verified**.
 
+## 2026-11-22
+
+### Guide: what to do when the PowerPoint button says its certificate isn't valid
+- On a network whose firewall replaces getbema.dev's certificate with its own, PowerPoint blocks the button's add-in with *Add-in Error… isn't signed by a valid security certificate*. The guide now explains the cause, how to check it with `curl`, and the ways around it (another network, asking IT to exempt getbema.dev, or ⌃⌥P). Docs only; no code changed.
+- Checked: on the affected network only getbema.dev came back with the firewall's certificate; other sites had their own. Not verified: that the button works on another network on the same Mac.
+
 ## 2026-11-19
 
 ### The timer looks stopped when the show ends, and each show starts at 0:00 (Bema 0.1.18)
