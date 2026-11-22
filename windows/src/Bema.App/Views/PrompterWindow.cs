@@ -317,7 +317,7 @@ sealed class ScriptView : Grid
                 t.Margin = new Thickness(0, 0, size * 0.27, size * 0.3);
                 t.Cursor = Cursors.Hand;
                 t.Tag = w.Id;
-                wordViews[id] = t;
+                wordViews[w.Id] = t;
                 wrap.Children.Add(t);
             }
             column.Children.Add(wrap);
@@ -326,7 +326,7 @@ sealed class ScriptView : Grid
         readingBand.Height = size * 1.45;
         readingArrow.FontSize = Math.Max(12, size * 0.35);
         shownCurrent = -1;
-        Dispatcher.BeginInvoke(Measure, System.Windows.Threading.DispatcherPriority.Loaded);
+        Dispatcher.BeginInvoke(new Action(Measure), System.Windows.Threading.DispatcherPriority.Loaded);
     }
 
     /// <summary>Reads where each word sits after layout, to move the script smoothly between words.</summary>

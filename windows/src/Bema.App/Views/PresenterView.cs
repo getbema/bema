@@ -59,7 +59,7 @@ sealed class PresenterView : DockPanel
 
         filmstrip.Height = 108;
         filmstrip.BorderThickness = new Thickness(0, 1, 0, 0);
-        filmstrip.SetResourceReference(BorderBrushProperty, "Border");
+        filmstrip.SetResourceReference(Control.BorderBrushProperty, "Border");
         filmstrip.Bg("Bar");
         ScrollViewer.SetHorizontalScrollBarVisibility(filmstrip, ScrollBarVisibility.Auto);
         ScrollViewer.SetVerticalScrollBarVisibility(filmstrip, ScrollBarVisibility.Disabled);

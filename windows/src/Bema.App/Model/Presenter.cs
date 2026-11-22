@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Bema.App.PowerPoint;
+using Bema.App.Speech;
 using Bema.Core;
 
 namespace Bema.App.Model;

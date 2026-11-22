@@ -105,6 +105,13 @@ public sealed class NoteWriterSettingsWindow : PanelWindow
         col.Children.Add(Note("Nothing is sent anywhere until you choose a writer and ask for notes. Notes stay drafts in Bema until you save them into the deck."));
         var privacy = Ui.Text("", 12, "Muted", wrap: true).With(t => t.Margin = new Thickness(0, 8, 0, 12));
         var details = new StackPanel();
+        var claudeKey = new PasswordBox { Password = Settings.ReadKey(NoteWriterKind.Claude) ?? "", Padding = new Thickness(8, 6, 8, 6) };
+        var openAIKey = new PasswordBox { Password = Settings.ReadKey(NoteWriterKind.OpenAI) ?? "", Padding = new Thickness(8, 6, 8, 6) };
+        var claudeModel = new TextBox { Text = s.ClaudeModel };
+        var openAIModel = new TextBox { Text = s.OpenAIModel };
+        var localUrl = new TextBox { Text = s.LocalUrl };
+        var localModel = new ComboBox { IsEditable = true, Text = s.LocalModel };
+        var localPicture = new CheckBox { Content = "Send the slide's picture (for models that read images)", IsChecked = s.LocalSendsPicture };
         var kinds = new StackPanel { Margin = new Thickness(0, 12, 0, 0) };
         NoteWriterKind? chosen = s.Kind;
         foreach (var k in new[] { NoteWriterKind.Local, NoteWriterKind.Claude, NoteWriterKind.OpenAI })
@@ -116,14 +123,6 @@ public sealed class NoteWriterSettingsWindow : PanelWindow
         col.Children.Add(kinds);
         col.Children.Add(privacy);
         col.Children.Add(details);
-
-        var claudeKey = new PasswordBox { Password = Settings.ReadKey(NoteWriterKind.Claude) ?? "", Padding = new Thickness(8, 6, 8, 6) };
-        var openAIKey = new PasswordBox { Password = Settings.ReadKey(NoteWriterKind.OpenAI) ?? "", Padding = new Thickness(8, 6, 8, 6) };
-        var claudeModel = new TextBox { Text = s.ClaudeModel };
-        var openAIModel = new TextBox { Text = s.OpenAIModel };
-        var localUrl = new TextBox { Text = s.LocalUrl };
-        var localModel = new ComboBox { IsEditable = true, Text = s.LocalModel };
-        var localPicture = new CheckBox { Content = "Send the slide's picture (for models that read images)", IsChecked = s.LocalSendsPicture };
 
         void Fill()
         {
