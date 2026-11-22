@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Bema's logic with no Windows dependency, so it builds and is tested on any OS (also on the
+       maintainer's Mac). Ported from the Mac app's pure parts. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Bema.Core</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Pages\*.html" LogicalName="Bema.Core.Pages.%(Filename)%(Extension)" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Bema.Core.Tests" />
+  </ItemGroup>
+</Project>

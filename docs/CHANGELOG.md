@@ -4,6 +4,16 @@ What was built, newest first. The reasons behind choices are in [DECISIONS.md](D
 
 Each entry says what changed and, where it applies, what was **not verified**.
 
+## 2026-11-22
+
+### Bema for Windows, a first version (windows/)
+- A Windows port of Bema in C# and WPF, in `windows/`: the presenter window (current and next slide, large notes with cues and bold, timer with pace, filmstrip, pointer tools, black and white screen), the start screen with quick prompt, the detached prompter (Voice, Auto and Manual, mirror, reading line, under the camera, hidden from screen sharing), the overlay that draws the pointer, spotlight, magnifier, pen, stamps, reactions, captions and the poll over PowerPoint's slideshow, the display chooser, the phone remote and polls, voice commands, the speech coach and talk reports, speaker-notes writing (local model, Claude or OpenAI key) with drafts saved into the deck, Claude Desktop over MCP, the notification-area panel, Ctrl+Alt+P, `bema://` links and Present with Bema in File Explorer.
+- PowerPoint is driven through COM on one STA thread; Bema hides PowerPoint's own presenter view for each show it starts and places the slideshow on the chosen display.
+- The logic shared with the Mac app is in `Bema.Core`, which builds on any OS, with tests, many ported from the Mac app's (aligner, voice target, script building, voice commands, budgets and pace, displays, timer, remote and poll, notes writing, MCP).
+- CI builds and tests it on a Windows runner and keeps `Bema.exe` for 14 days.
+- Not in this version: the camera self view and bubble, the PowerPoint ribbon button, automatic updates, a signed installer, Keynote (not on Windows).
+- Not verified: everything that runs on Windows. It hasn't been built or tests run on this Mac (no .NET here); CI is the first compile. Nothing has been tried on a Windows PC: driving PowerPoint, hiding windows from sharing, the overlay, speech, the remote.
+
 ## 2026-11-19
 
 ### The timer looks stopped when the show ends, and each show starts at 0:00 (Bema 0.1.18)

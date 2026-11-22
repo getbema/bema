@@ -50,6 +50,10 @@ Bema runs on your Mac. No account, no cloud service, no analytics.
 
 Full detail is in [docs/GUIDE.md](docs/GUIDE.md).
 
+## Windows
+
+A Windows version is in progress in [windows/](windows/README.md): the same presenter for PowerPoint on Windows. It isn't released yet.
+
 ## Build from source
 
 You need Xcode 16 or later (or the Swift 6 command line tools). Releases are made with `Scripts/release.sh` (see the script for what it needs).

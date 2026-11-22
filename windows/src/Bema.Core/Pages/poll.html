@@ -1,0 +1,22 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0E1014"><title>Vote</title>
+<style>
+body{margin:0;background:#0E1014;color:#E9EBEF;font:17px/1.45 -apple-system,system-ui,sans-serif;padding:calc(env(safe-area-inset-top) + 24px) 18px 24px}
+h1{font-size:24px;line-height:1.25;margin:0 0 20px}
+button{display:block;width:100%;text-align:left;font:600 18px system-ui;padding:18px;margin-bottom:10px;border-radius:14px;border:1px solid #2A2F3A;background:#181B22;color:#E9EBEF}
+button.on{border:2px solid #F5A524;background:#2A2113}
+p{color:#9BA3AF;font-size:14px}
+</style></head><body>
+<h1 id="q">Loading…</h1><div id="opts"></div><p id="msg"></p>
+<script>
+const base=location.pathname.replace(/\/$/,'');
+let voter=localStorage.getItem('bemaVoter');if(!voter){voter=Math.random().toString(36).slice(2);localStorage.setItem('bemaVoter',voter)}
+let mine=localStorage.getItem('bemaVote:'+base);let key='';
+async function load(){const s=await (await fetch(base+'/state')).json();const k=JSON.stringify(s);if(k===key)return;key=k;
+q.textContent=s.question;q.dir=/[֐-ࣿ]/.test(s.question)?'rtl':'ltr';opts.innerHTML='';
+s.options.forEach((o,i)=>{const b=document.createElement('button');b.textContent=o;b.dir='auto';if(String(i)===mine)b.className='on';
+b.onclick=async()=>{await fetch(base+'/vote?o='+i+'&v='+voter,{method:'POST'});mine=String(i);localStorage.setItem('bemaVote:'+base,mine);
+[...opts.children].forEach((c,j)=>c.className=j===i?'on':'');msg.textContent='Thanks! You can change your vote.'};opts.appendChild(b)})}
+load().catch(()=>{q.textContent='This poll is closed.'});setInterval(()=>load().catch(()=>{}),3000);
+</script></body></html>

@@ -1,0 +1,49 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0E1014"><title>Bema remote</title>
+<style>
+:root{--ground:#0E1014;--panel:#15181E;--raised:#1B1F27;--border:#232731;--text:#E9EBEF;--muted:#9BA3AF;--accent:#F5A524;--ink:#1A1206;--live:#FF5A4F}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--ground);color:var(--text);font:16px/1.45 -apple-system,system-ui,sans-serif;padding:calc(env(safe-area-inset-top) + 12px) 16px calc(env(safe-area-inset-bottom) + 16px)}
+header{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.deck{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.live{font:800 11px system-ui;letter-spacing:.08em;color:#FF8F87;background:#3A1A1A;border-radius:99px;padding:3px 8px}
+.timer{font:600 28px ui-rounded,system-ui;font-variant-numeric:tabular-nums}
+.muted{color:var(--muted);font-size:13px}
+img{width:100%;aspect-ratio:16/9;object-fit:contain;background:#fff;border-radius:10px;margin:12px 0 4px;display:block}
+.pos{display:flex;justify-content:space-between;align-items:baseline}
+.pos b{font-size:22px}
+.notes{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px;margin:10px 0 14px;font-size:18px;white-space:pre-wrap;max-height:34vh;overflow:auto}
+.row{display:grid;grid-template-columns:1fr 2fr;gap:10px;margin-bottom:10px}
+button{font:600 17px system-ui;border-radius:14px;border:1px solid var(--border);background:var(--raised);color:var(--text);min-height:64px}
+button.next{background:var(--accent);color:var(--ink);border:none;font-size:22px;min-height:96px}
+button.prev{min-height:96px}
+.small{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.small button{min-height:52px;font-size:14px}
+button.on{outline:2px solid var(--accent)}
+</style></head><body>
+<header><span class="deck" id="deck">Bema</span><span id="live"></span></header>
+<div class="pos"><span class="timer" id="timer">00:00</span><span class="muted" id="target"></span></div>
+<img id="slide" alt="Current slide">
+<div class="pos"><span><b id="position">–</b> <span class="muted" id="count"></span></span><span class="muted" id="next"></span></div>
+<div class="notes" id="notes"></div>
+<div class="row"><button class="prev" onclick="cmd('prev')">◀︎ Back</button><button class="next" onclick="cmd('next')">Next ▶︎</button></div>
+<div class="small">
+<button id="black" onclick="cmd('black')">Black</button>
+<button onclick="cmd('timer')">Timer</button>
+<button id="prompter" onclick="cmd('prompter')">Prompter</button>
+<button onclick="cmd('confetti')">🎉</button>
+</div>
+<script>
+const base=location.pathname.replace(/\/$/,'');let lastSlide=-1;
+function fmt(s){s=Math.max(0,s|0);return String(s/60|0).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+async function cmd(c){if(navigator.vibrate)navigator.vibrate(15);await fetch(base+'/cmd?c='+c,{method:'POST'});refresh()}
+async function refresh(){try{const r=await fetch(base+'/state');const s=await r.json();
+deck.textContent=s.deck;live.innerHTML=s.presenting?'<span class="live">LIVE</span>':'';
+timer.textContent=fmt(s.elapsed);target.textContent=s.target?'of '+fmt(s.target):'';
+position.textContent=s.position;count.textContent='/ '+s.count;next.textContent=s.nextTitle?'Next: '+s.nextTitle:'';
+notes.textContent=s.notes||'No notes for this slide.';black.classList.toggle('on',s.black);prompter.classList.toggle('on',s.prompter);
+notes.dir=/[֐-ࣿ]/.test(s.notes)?'rtl':'ltr';
+if(s.slide!==lastSlide){lastSlide=s.slide;slide.src=base+'/slide/'+s.slide+'.jpg'}}catch(e){}}
+refresh();setInterval(refresh,1000);
+</script></body></html>

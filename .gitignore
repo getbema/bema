@@ -34,3 +34,8 @@ site/.wrangler/
 site/node_modules/
 dist/
 .release.env
+
+# Bema for Windows (.NET build output)
+windows/**/bin/
+windows/**/obj/
+windows/publish/

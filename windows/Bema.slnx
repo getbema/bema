@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Bema.Core/Bema.Core.csproj" />
+    <Project Path="src/Bema.App/Bema.App.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Bema.Core.Tests/Bema.Core.Tests.csproj" />
+  </Folder>
+</Solution>

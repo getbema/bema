@@ -19,3 +19,25 @@ jobs:
         run: swift test
       - name: Build the app bundle (ad hoc signature)
         run: SIGN_IDENTITY=- ./Scripts/build_app.sh
+
+  windows:
+    # Bema for Windows (windows/): the shared logic's tests, then the WPF app as one Bema.exe.
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: windows
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Test the shared logic
+        run: dotnet test tests/Bema.Core.Tests/Bema.Core.Tests.csproj -c Release
+      - name: Build Bema.exe
+        run: dotnet publish src/Bema.App/Bema.App.csproj -c Release -o publish
+      - name: Keep the build
+        uses: actions/upload-artifact@v4
+        with:
+          name: Bema-windows
+          path: windows/publish/Bema.exe
+          retention-days: 14

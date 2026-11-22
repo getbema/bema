@@ -2,6 +2,19 @@
 
 Choices made while building Bema, with the reason, so they are not re-argued or quietly undone. Newest first. Add one whenever a choice is made that the code alone would not explain.
 
+## 2026-11-22
+
+- **The Windows version is C# and WPF in `windows/`, beside the Mac app, not a cross-platform rewrite.** Chosen by the maintainer from three options (WPF, WinUI 3, Tauri/Electron). Native Windows APIs do what Bema needs: COM drives PowerPoint far more fully than AppleScript does on the Mac, `SetWindowDisplayAffinity(WDA_EXCLUDEFROMCAPTURE)` keeps windows out of screen sharing, and a click-through layered window draws over the slideshow. A web stack would have meant rewriting the Mac app too and adding dependencies. Same repository, so docs, CHANGELOG and site stay one.
+- **Logic shared with the Mac app is ported to `Bema.Core` (no Windows dependency), not shared as code.** Swift and C# can't share source; keeping the pure rules in a library that builds on any OS lets them be tested on the maintainer's Mac and in CI, and many tests are ports of the Mac app's, so both apps follow speech, budget time and parse commands the same way. When a rule changes on one side, change and test it on the other.
+- **The whole Mac feature set in the first Windows version.** Asked for by the maintainer, over a smaller first version. The camera self view and bubble, the ribbon button and updates are left for later: each needs its own Windows plumbing (MediaCapture, an Office add-in for Windows, an update feed and signing).
+- **Windows speech is SAPI (`System.Speech`), on the PC only.** Windows' newer recognizer (`Windows.Media.SpeechRecognition`) uses Microsoft's online service for dictation, against Bema's rule that speech stays on the device when it can. SAPI recognizes only the speech languages installed in Windows (often just the display language); for any other Bema says it can't listen, rather than going online.
+- **.NET 10, not .NET 8.** .NET 8 leaves support in November 2026; 10 is the long-term release.
+- **One self-contained `Bema.exe`.** Nothing to install first, no .NET runtime to ask people for. Bigger download, simpler start.
+- **Two NuGet packages: QRCoder and System.Speech** (plus ProtectedData for keys). QR codes have no built-in Windows API, and QRCoder draws them locally with no network. None of them contacts anything.
+- **Settings in a JSON file in `%APPDATA%\Bema`, API keys encrypted with DPAPI for the Windows user.** The Mac's UserDefaults and Keychain have no exact Windows twin; DPAPI ties the keys to the user's sign-in like the Keychain does.
+- **Pipes are owner-only.** The single-instance pipe and the MCP pipe get an access rule for the current user only, and their names include the user's SID, so another account on the same PC can't reach them (the Mac's socket is chmod 600).
+- **No update check on Windows yet.** Sparkle is Mac-only and the allowed update check is the Mac app's; a Windows feed would be a new outgoing connection, so it waits for the maintainer to choose one.
+
 ## 2026-11-19
 
 - **The timer pauses when a show ends, and the next show starts it from 0:00.** Chosen by the maintainer over resetting at once (the time would vanish before it's read) and over resuming (a new show kept an old show's time, red and *over time*). Starting, pausing or resetting by hand clears the ended-show mark, so a presenter who ended by mistake can press ▶ and carry on. A paused timer is drawn dimmed, never red, so it can't look live.

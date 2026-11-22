@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Bema for Windows: the presenter app. WPF, so it builds only on Windows (CI's Windows runner).
+       The logic shared with the Mac app is in Bema.Core. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <RootNamespace>Bema.App</RootNamespace>
+    <AssemblyName>Bema</AssemblyName>
+    <ApplicationIcon>Assets\Bema.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <!-- One self-contained Bema.exe: nothing to install first. -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <!-- WinForms is used only for the tray icon; avoid its type names clashing with WPF's. -->
+    <NoWarn>$(NoWarn);CA1416</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Bema.Core\Bema.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- On-device speech recognition (SAPI): nothing is sent anywhere. -->
+    <PackageReference Include="System.Speech" Version="9.0.0" />
+    <!-- QR codes for the phone remote and polls, drawn locally (MIT, no network). -->
+    <PackageReference Include="QRCoder" Version="1.6.0" />
+    <!-- API keys encrypted for this Windows user (DPAPI). -->
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Bema.ico" />
+  </ItemGroup>
+</Project>
