@@ -2,6 +2,10 @@
 
 Choices made while building Bema, with the reason, so they are not re-argued or quietly undone. Newest first. Add one whenever a choice is made that the code alone would not explain.
 
+## 2026-11-23
+
+- **A deck file macOS won't let Bema open is read through PowerPoint, not copied.** PowerPoint opens Outlook attachments from Outlook's container, which macOS protects from other apps, so Bema's `unzip` got "Operation not permitted" and the deck looked like it wasn't a .pptx. Asking for the "data from other apps" permission would mean a prompt per app and couldn't be relied on; having PowerPoint save a copy can move its open document to the copy (as for cloud decks). Bema already reads cloud decks over AppleScript, so a blocked file takes the same path. It's detected by trying to open the file (`EPERM` or `EACCES`), not by the path, so other protected places work too.
+
 ## 2026-11-19
 
 - **The timer pauses when a show ends, and the next show starts it from 0:00.** Chosen by the maintainer over resetting at once (the time would vanish before it's read) and over resuming (a new show kept an old show's time, red and *over time*). Starting, pausing or resetting by hand clears the ended-show mark, so a presenter who ended by mistake can press ▶ and carry on. A paused timer is drawn dimmed, never red, so it can't look live.

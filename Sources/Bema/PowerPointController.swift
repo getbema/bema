@@ -103,10 +103,9 @@ final class PowerPointController {
         cloudURL = url
     }
 
-    /// Titles and notes for a cloud deck, read through PowerPoint (there's no file to read). Nil for a file,
-    /// which Bema reads itself: that's faster.
+    /// Titles and notes read through PowerPoint, for a deck Bema can't read itself: a cloud deck (there's
+    /// no file) or a file macOS keeps from Bema. Other files Bema reads itself: that's faster.
     func readSlides() async throws -> [SlideInfo]? {
-        guard cloudURL != nil else { return nil }
         // `set x to content of …` doesn't compile against PowerPoint's dictionary, hence `get` + `copy result`.
         let out = try await run("""
         tell application "Microsoft PowerPoint"

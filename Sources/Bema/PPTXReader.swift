@@ -12,10 +12,14 @@ struct SlideInfo: Identifiable, Hashable {
 
 enum PPTXError: LocalizedError {
     case unreadable(String)
+    /// The file is there but macOS won't let Bema open it, e.g. an attachment PowerPoint opened from
+    /// Outlook's own folder, which macOS keeps from other apps.
+    case blocked
 
     var errorDescription: String? {
         switch self {
         case .unreadable(let why): return "Couldn't read the presentation: \(why)"
+        case .blocked: return "Couldn't read the presentation: macOS doesn't let Bema open this file."
         }
     }
 }
@@ -27,6 +31,7 @@ enum PPTXReader {
 
     static func read(url: URL) throws -> [SlideInfo] {
         let fm = FileManager.default
+        if isBlocked(url) { throw PPTXError.blocked }
         let tmp = fm.temporaryDirectory.appendingPathComponent("Bema-\(UUID().uuidString)")
         try fm.createDirectory(at: tmp, withIntermediateDirectories: true)
         defer { try? fm.removeItem(at: tmp) }
@@ -76,6 +81,15 @@ enum PPTXReader {
 
         if slides.isEmpty { throw PPTXError.unreadable("no slides were found.") }
         return slides
+    }
+
+    /// True when the file exists but can't be opened for reading (no permission, or macOS keeps it from
+    /// Bema). Then the slides have to be read through the app that has it open.
+    static func isBlocked(_ url: URL) -> Bool {
+        guard FileManager.default.fileExists(atPath: url.path) else { return false }
+        let fd = Darwin.open(url.path, O_RDONLY)
+        if fd >= 0 { Darwin.close(fd); return false }
+        return errno == EPERM || errno == EACCES
     }
 
     // MARK: - Helpers

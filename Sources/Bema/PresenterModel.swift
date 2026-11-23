@@ -196,18 +196,21 @@ final class PresenterModel: ObservableObject {
         addRecent(url)
 
         app = SlideshowApps.controller(for: url)
-        // Keynote decks, and PowerPoint decks opened from OneDrive, SharePoint or Teams (no file to read).
-        let readsThroughApp = app is KeynoteController || CloudDeck.isCloud(url)
+        // Keynote decks, PowerPoint decks opened from OneDrive, SharePoint or Teams (no file to read), and
+        // files macOS keeps from Bema, such as an attachment PowerPoint opened from Outlook.
+        var readsThroughApp = app is KeynoteController || CloudDeck.isCloud(url)
 
         if !readsThroughApp {
             phase = .loading("Reading speaker notes…")
             do {
                 deckSlides = try await Task.detached { try PPTXReader.read(url: url) }.value
+                slidesLoaded(url)
+            } catch PPTXError.blocked where app is PowerPointController {
+                readsThroughApp = true
             } catch {
                 phase = .failed(error.localizedDescription)
                 return
             }
-            slidesLoaded(url)
         }
 
         phase = .loading("Opening in \(app.appName)…")
