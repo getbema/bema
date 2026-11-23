@@ -6,7 +6,7 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-23
 
-### Decks opened from Outlook attachments load
+### Decks opened from Outlook attachments load (Bema 0.1.19)
 - Presenting a deck PowerPoint had opened from an Outlook attachment failed with *Couldn't read the presentation: it doesn't look like a PowerPoint (.pptx) file*. The deck was fine: macOS keeps Outlook's folder from other apps, so Bema couldn't open the file. Bema now notices a file it isn't allowed to open and reads the titles and notes through PowerPoint instead, as for OneDrive decks. A file that really isn't a deck still gets the old message.
 - Checked: tests for a file Bema can't open, a missing file and a file name with brackets; live, an attachment deck open in PowerPoint loaded with its slides and previews. Not verified: writing notes into such a deck (it's a read-only copy, so saving is expected to fail), or Keynote decks in a protected folder.
 
