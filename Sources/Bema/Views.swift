@@ -504,6 +504,24 @@ struct ShowControl: View {
                 }
                 .buttonStyle(PillButtonStyle(kind: .danger))
                 .help("End the slideshow (Esc)")
+                Button { model.stepOut() } label: {
+                    Image(systemName: "macwindow.on.rectangle")
+                }
+                .buttonStyle(IconButtonStyle())
+                .accessibilityLabel("Show something else")
+                .help("Take the slides off the audience display so a browser or app there is what you share. The timer keeps running (⇧⌘S)")
+            } else if model.steppedOut {
+                Button { model.backToSlides() } label: {
+                    Label("Resume", systemImage: "play.fill").fixedSize()
+                }
+                .buttonStyle(PillButtonStyle(kind: .accent))
+                .help("Start the slideshow again on slide \(model.steppedOutAt ?? 1) (⌘↩)")
+                Button { model.endShowButton() } label: {
+                    Image(systemName: "stop.fill")
+                }
+                .buttonStyle(IconButtonStyle())
+                .accessibilityLabel("End show")
+                .help("End the talk and stop the timer (Esc)")
             } else {
                 Button { model.requestStart() } label: {
                     Label("Start slideshow", systemImage: "play.fill").fixedSize()
@@ -537,6 +555,9 @@ struct ShowControl: View {
                 }
                 if model.phase == .presenting {
                     Text("Slides on \(model.presentingOn) · \(model.audienceFullScreen ? "full screen" : "in a window")")
+                        .font(.system(size: 12)).foregroundStyle(Theme.muted).lineLimit(1)
+                } else if model.steppedOut {
+                    Text("Stepped out")
                         .font(.system(size: 12)).foregroundStyle(Theme.muted).lineLimit(1)
                 } else {
                     AudienceDisplayPicker(style: .inline)

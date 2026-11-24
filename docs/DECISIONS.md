@@ -2,6 +2,11 @@
 
 Choices made while building Bema, with the reason, so they are not re-argued or quietly undone. Newest first. Add one whenever a choice is made that the code alone would not explain.
 
+## 2026-11-24
+
+- **Showing something else mid-talk ends the slideshow and starts it again, rather than hiding it.** Chosen by the maintainer over a black screen: a full-screen slideshow stays on top, so a browser dragged to that display wouldn't be seen. Ending PowerPoint's show frees the display; Bema keeps the slide and the timer, so Resume feels like a pause. Bema doesn't switch what Teams or Zoom shares: they have no interface for it, and clicking their controls through Accessibility would break with each update. It works when the person shares the whole display, which the guide says.
+- **The step-out and stepped-out End buttons are icons.** The top bar has to fit at the window's narrowest width (1320 points); a second labelled button pushed the controls off the edge in the render test. **Resume** keeps a label because it's the one thing to do next.
+
 ## 2026-11-23
 
 - **A deck file macOS won't let Bema open is read through PowerPoint, not copied.** PowerPoint opens Outlook attachments from Outlook's container, which macOS protects from other apps, so Bema's `unzip` got "Operation not permitted" and the deck looked like it wasn't a .pptx. Asking for the "data from other apps" permission would mean a prompt per app and couldn't be relied on; having PowerPoint save a copy can move its open document to the copy (as for cloud decks). Bema already reads cloud decks over AppleScript, so a blocked file takes the same path. It's detected by trying to open the file (`EPERM` or `EACCES`), not by the path, so other protected places work too.

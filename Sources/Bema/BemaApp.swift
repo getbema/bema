@@ -77,7 +77,12 @@ struct BemaApp: App {
                     .disabled(!model.canStart)
                 Button("End Slideshow") { model.endShowButton() }
                     .keyboardShortcut(".", modifiers: .command)
-                    .disabled(model.phase != .presenting)
+                    .disabled(model.phase != .presenting && !model.steppedOut)
+                Button(model.steppedOut ? "Back to Slides" : "Show Something Else") {
+                    if model.steppedOut { model.backToSlides() } else { model.stepOut() }
+                }
+                .keyboardShortcut("s", modifiers: [.command, .shift])
+                .disabled(model.phase != .presenting && !model.steppedOut)
                 Divider()
                 Button("Next Slide") { model.next() }
                     .keyboardShortcut(.rightArrow, modifiers: .command)

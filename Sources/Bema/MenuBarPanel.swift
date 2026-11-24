@@ -45,6 +45,11 @@ struct MenuBarPanel: View {
                     if model.phase == .presenting {
                         Button("End show") { model.endShowButton() }.buttonStyle(PillButtonStyle(kind: .danger, height: 30))
                         Button("Black") { model.toggleBlack() }.buttonStyle(PillButtonStyle(kind: model.audience == .black ? .warning : .normal, height: 30))
+                        Button("Step out") { model.stepOut() }.buttonStyle(PillButtonStyle(kind: .normal, height: 30))
+                            .help("Show something else on the audience display; the timer keeps running")
+                    } else if model.steppedOut {
+                        Button("Back to slides") { model.backToSlides() }.buttonStyle(PillButtonStyle(kind: .accent, height: 30))
+                        Button("End show") { model.endShowButton() }.buttonStyle(PillButtonStyle(kind: .danger, height: 30))
                     } else {
                         Button("Start slideshow") { model.requestStart() }.buttonStyle(PillButtonStyle(kind: .accent, height: 30))
                             .disabled(!model.canStart)

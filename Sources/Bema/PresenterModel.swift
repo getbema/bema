@@ -18,7 +18,8 @@ final class PresenterModel: ObservableObject {
 
     enum AudienceScreen: Equatable { case black, white, normal }
 
-    @Published private(set) var phase: Phase = .empty {
+    // Settable inside the module so tests can put the model in a show without PowerPoint.
+    @Published var phase: Phase = .empty {
         didSet {
             if oldValue != .presenting && phase == .presenting { CoachModel.shared.showStarted() }
             if oldValue == .presenting && phase != .presenting { CoachModel.shared.showEnded() }
@@ -52,6 +53,10 @@ final class PresenterModel: ObservableObject {
     @Published private(set) var pdf: PDFDocument?
     @Published private(set) var audience: AudienceScreen = .normal
     @Published private(set) var showEnded = false
+    /// The slideshow stepped aside so something else (a browser, a demo) shows on the shared display;
+    /// the slide to come back to. Nil when not stepped out.
+    @Published private(set) var steppedOutAt: Int?
+    var steppedOut: Bool { steppedOutAt != nil }
     @Published var powerPointReady = false
     @Published var notice: String?
     @Published var showAccessibilityHelp = false
@@ -110,7 +115,7 @@ final class PresenterModel: ObservableObject {
     @Published private(set) var timerAccumulated: TimeInterval = 0
 
     /// PowerPoint or Keynote, chosen by the deck's file type.
-    private(set) var app: SlideshowController = PowerPointController()
+    var app: SlideshowController = PowerPointController()
     /// The app that has the deck offered on the welcome card ("Open in Keynote").
     @Published private(set) var openInAppName = "PowerPoint"
 
@@ -180,7 +185,7 @@ final class PresenterModel: ObservableObject {
     }
 
     private func loadDeck(_ url: URL) async {
-        if phase == .presenting { await endShow() }
+        if phase == .presenting || steppedOut { await endShow() }
         pollTask?.cancel()
         deckURL = url
         noteWritingTask?.cancel()
@@ -328,7 +333,7 @@ final class PresenterModel: ObservableObject {
 
     func closeDeck() {
         Task {
-            if phase == .presenting { await endShow() }
+            if phase == .presenting || steppedOut { await endShow() }
             phase = .empty
             deckURL = nil
             noteWritingTask?.cancel()
@@ -358,6 +363,7 @@ final class PresenterModel: ObservableObject {
     /// The phone remote and clickers start straight away on the usual display.
     func requestStart() {
         guard canStart else { return }
+        if steppedOut { return backToSlides() }
         if AudienceDisplay.shouldAsk(enabled: askForDisplay, displayCount: screens.count) {
             showPresenterWindow()
             displayChooserOpen = true
@@ -392,6 +398,7 @@ final class PresenterModel: ObservableObject {
                 audience = .normal
                 let ok = try await app.startShow(on: screen, from: current, fullScreen: fullScreen)
                 presentingOn = screen.localizedName
+                steppedOutAt = nil
                 audienceFullScreen = fullScreen && ok
                 phase = .presenting
                 startTimerForShow()
@@ -428,8 +435,34 @@ final class PresenterModel: ObservableObject {
         showStopped()
     }
 
+    /// Takes the slideshow off the audience display without ending the talk, so whatever is on that display
+    /// (a browser dragged there, a demo) is what the call shares. The timer keeps running and Bema remembers
+    /// the slide; Back to slides starts the show again there, on the same display.
+    func stepOut() { Task { await stepOutOfShow() } }
+
+    func stepOutOfShow() async {
+        guard phase == .presenting else { return }
+        let slide = current
+        pollTask?.cancel()
+        failedPolls = 0
+        if SlideshowApps.isRunning(app.bundleID) { try? await app.endShow() }
+        phase = .ready
+        tool = .none
+        updateOverlay()
+        audience = .normal
+        steppedOutAt = slide
+    }
+
+    /// Back from stepping out: the show starts again on the slide it left, and the timer carries on.
+    func backToSlides() {
+        guard let slide = steppedOutAt else { return }
+        current = slide
+        startShow()
+    }
+
     /// Back to the deck after the show ends, however it ended: the timer stops and Start is available again.
     private func showStopped() {
+        steppedOutAt = nil
         pollTask?.cancel()
         failedPolls = 0
         if phase == .presenting { phase = .ready }
@@ -584,7 +617,7 @@ final class PresenterModel: ObservableObject {
         case 119: last(); return true                                 // End
         case 53:                                                      // Esc
             if tool != .none { tool = .none; return true }
-            if phase == .presenting { endShowButton(); return true }
+            if phase == .presenting || steppedOut { endShowButton(); return true }
             return false
         default: break
         }
