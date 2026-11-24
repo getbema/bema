@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Builds Bema.app into ./build and, with --install, copies it to ~/Applications
+# Builds Bema.app into ./build and, with --install, moves it to ~/Applications
 # and registers it with Finder (Open With and the Services / Quick Actions menu).
 set -euo pipefail
 
@@ -43,7 +43,11 @@ if [[ "${1:-}" == "--install" ]]; then
   pkill -x Bema 2>/dev/null || true
   rm -rf "$DEST"
   cp -R "$APP" "$DEST"
-  /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "$DEST"
+  LSREGISTER=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
+  "$LSREGISTER" -f "$DEST"
+  # Keep only the installed copy: a second Bema.app that macOS knows about can be opened instead of it.
+  "$LSREGISTER" -u "$APP" 2>/dev/null || true
+  rm -rf "$APP"
   /System/Library/CoreServices/pbs -update 2>/dev/null || true
   echo "Installed $DEST"
 fi

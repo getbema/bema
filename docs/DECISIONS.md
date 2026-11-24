@@ -4,6 +4,8 @@ Choices made while building Bema, with the reason, so they are not re-argued or 
 
 ## 2026-11-24
 
+- **The build scripts don't leave launchable copies of Bema behind.** Launch Services opens the newest version of a bundle id it knows, wherever it is, so a release build left in `build/release` won over the installed app and was running while Sparkle updated /Applications, and the installer didn't launch. Removing the copies is simpler than asking people to watch which Bema they opened. The development build in ~/Applications stays by design; it never updates itself, so it can be opened instead of an older /Applications copy.
+
 - **Showing something else mid-talk ends the slideshow and starts it again, rather than hiding it.** Chosen by the maintainer over a black screen: a full-screen slideshow stays on top, so a browser dragged to that display wouldn't be seen. Ending PowerPoint's show frees the display; Bema keeps the slide and the timer, so Resume feels like a pause. Bema doesn't switch what Teams or Zoom shares: they have no interface for it, and clicking their controls through Accessibility would break with each update. It works when the person shares the whole display, which the guide says.
 - **The step-out and stepped-out End buttons are icons.** The top bar has to fit at the window's narrowest width (1320 points); a second labelled button pushed the controls off the edge in the render test. **Resume** keeps a label because it's the one thing to do next.
 

@@ -6,6 +6,10 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-24
 
+### The build scripts leave only the installed Bema for macOS to open
+- Updating 0.1.18 in /Applications to 0.1.20 failed with *An error occurred while launching the installer*. At the time a second Bema was running from `build/release/Bema.app`, the copy `Scripts/release.sh` builds: macOS opens the newest version of an app it knows about, and that copy was newer than the one in /Applications. `release.sh` now removes that copy once the disk image is made and tells Launch Services to forget it and the copy it checks inside the disk image. `build_app.sh --install` moves the build into ~/Applications instead of leaving a second copy in `build/`.
+- Checked: both scripts parse; `lsregister -u` removes a copy from Launch Services, and the stale copies on the maintainer's Mac were removed that way. Not verified: that two running copies were what stopped Sparkle's installer (its log wasn't captured), a full release run with the change, or `build_app.sh --install` (it quits a running Bema, and a show was on).
+
 ### Show something else mid-talk, then resume the slides (Bema 0.1.20)
 - During a show, a new button next to **End show** (also **Slideshow → Show Something Else**, ⇧⌘S, and **Step out** in the menu bar panel) takes the slideshow off the audience display so a browser or demo there is what a call sharing that display sees. The timer keeps running and Bema remembers the slide; **Resume** (⌘↩ or ⇧⌘S) starts the show again on that slide and display. Ending the talk while stepped out stops the timer as usual; Esc ends it too.
 - Checked: tests that stepping out keeps the timer running and remembers the slide, that ending while stepped out stops the timer, and that it only happens during a show; renders of the top bar in a show and stepped out at the narrowest width. Not verified: live with PowerPoint and a call app sharing a display, or with Keynote.

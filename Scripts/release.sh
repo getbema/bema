@@ -19,6 +19,10 @@
 # Resources/Info.plist). The version is CFBundleShortVersionString / CFBundleVersion in Resources/Info.plist.
 set -euo pipefail
 
+# Tells Launch Services to forget a copy of Bema, so "open Bema" only ever finds the installed one.
+LSREGISTER=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
+forget_app() { "$LSREGISTER" -u "$1" 2>/dev/null || true; }
+
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 # Local settings that never go in the repository (the notarytool profile name).
@@ -103,6 +107,10 @@ rm -f "$OUT/$NAME.dmg"
 hdiutil create -volname "Bema" -srcfolder "$STAGE" -ov -format UDZO "$OUT/$NAME.dmg" > /dev/null
 rm -rf "$STAGE"
 codesign --force --timestamp --sign "$HASH" "$OUT/$NAME.dmg"
+# The disk image has the app now. Remove the build copy so opening Bema never launches it from the
+# repository instead of /Applications (two copies running made Sparkle's installer fail to launch).
+forget_app "$APP"
+rm -rf "$ROOT/build/release"
 
 if [[ "$MODE" == "--local" ]]; then
   log "Local build (not notarised): $OUT/$NAME.dmg"
@@ -145,6 +153,7 @@ spctl --assess --type open --context context:primary-signature --verbose=2 "$OUT
 MOUNT=$(mktemp -d)
 hdiutil attach -nobrowse -readonly -mountpoint "$MOUNT" "$OUT/$NAME.dmg" > /dev/null
 spctl --assess --type execute --verbose=2 "$MOUNT/Bema.app"
+forget_app "$MOUNT/Bema.app"
 hdiutil detach "$MOUNT" > /dev/null
 
 # The same file under the stable name the site and the appcast link to.
